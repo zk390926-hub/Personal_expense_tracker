@@ -17,13 +17,37 @@ const PORT = parseInt(process.env.PORT || '5000', 10);
 app.use(helmet());
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
-// During local development we allow any origin.  In production restrict this to
-// the exact frontend URL via FRONTEND_ORIGIN in .env.
-const allowedOrigin = process.env.FRONTEND_ORIGIN || '*';
+// Allow all common local development origins so the app works whether the
+// frontend is opened via file://, VS Code Live Server, http-server, or Vite.
+const DEV_ORIGINS = [
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:8080',
+  'http://127.0.0.1:8080',
+];
+
 app.use(cors({
-  origin: allowedOrigin,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (file://, Postman, curl, etc.)
+    if (!origin) return callback(null, true);
+    // Allow if it matches .env FRONTEND_ORIGIN or any DEV_ORIGINS entry
+    const envOrigin = process.env.FRONTEND_ORIGIN;
+    if ((envOrigin && origin === envOrigin) || DEV_ORIGINS.includes(origin)) {
+      return callback(null, true);
+    }
+    // In development (no NODE_ENV=production), allow all origins
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS: origin ${origin} not allowed`));
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
+  credentials: true,
 }));
 
 // ── Body parsing ──────────────────────────────────────────────────────────────
