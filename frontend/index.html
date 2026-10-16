@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – Personal Expense Tracker</title>
+  <meta name="description" content="Personal Expense Tracker – monthly income, expenses, savings, and spending overview." />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <!-- Chart.js for income vs expenses chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+
+<!-- ── Mobile header ──────────────────────────────────────── -->
+<header class="mobile-header">
+  <span class="mobile-header-brand">Expense Tracker</span>
+  <button class="btn-hamburger" id="btn-hamburger" aria-label="Open menu">
+    <svg viewBox="0 0 24 24"><line x1="3" y1="6"  x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</header>
+
+<div class="app-layout">
+
+  <!-- ── Sidebar ──────────────────────────────────────────── -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93V18h-2v1.93C7.06 19.44 4.56 16.94 4.07 14H6v-2H4.07C4.56 9.06 7.06 6.56 10 6.07V8h2V6.07c2.94.49 5.44 2.99 5.93 5.93H16v2h1.93c-.49 2.94-2.99 5.44-5.93 5.93z"/></svg>
+      </div>
+      <div>
+        <div class="sidebar-brand-name">Expense Tracker</div>
+        <div class="sidebar-brand-sub">Personal Finance</div>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="sidebar-nav-label">Menu</div>
+      <a href="index.html" class="active" id="nav-dashboard">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="pages/transactions.html" id="nav-transactions">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Transactions
+      </a>
+      <a href="pages/reports.html" id="nav-reports">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Reports
+      </a>
+      <a href="pages/budget.html" id="nav-budget">
+        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Budget
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      &copy; 2024 Expense Tracker
+    </div>
+  </nav>
+
+  <!-- ── Main ─────────────────────────────────────────────── -->
+  <main class="main-content">
+    <div class="page" id="dashboard-page">
+
+      <!-- Page header -->
+      <div class="page-header">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Monthly overview of your income and expenses</p>
+        <div class="period-selector">
+          <label for="sel-month">Period:</label>
+          <select id="sel-month" style="width:130px">
+            <option value="1">January</option><option value="2">February</option>
+            <option value="3">March</option><option value="4">April</option>
+            <option value="5">May</option><option value="6">June</option>
+            <option value="7">July</option><option value="8">August</option>
+            <option value="9">September</option><option value="10">October</option>
+            <option value="11">November</option><option value="12">December</option>
+          </select>
+          <select id="sel-year" style="width:90px"></select>
+          <button class="btn btn-secondary btn-sm" id="btn-refresh-dashboard">
+            <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Toast anchor -->
+      <div id="toast-container" aria-live="polite"></div>
+
+      <!-- Notification area -->
+      <div id="dash-alert"></div>
+
+      <!-- Stats row -->
+      <div class="stats-row" id="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-label">Total Income</div>
+          <div class="stat-card-value income" id="stat-income">—</div>
+          <div class="stat-card-sub" id="stat-income-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Total Expenses</div>
+          <div class="stat-card-value expense" id="stat-expenses">—</div>
+          <div class="stat-card-sub" id="stat-expenses-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Net Savings</div>
+          <div class="stat-card-value savings" id="stat-savings">—</div>
+          <div class="stat-card-sub" id="stat-savings-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Savings Rate</div>
+          <div class="stat-card-value" id="stat-rate">—</div>
+          <div class="stat-card-sub">of total income saved</div>
+        </div>
+      </div>
+
+      <!-- Two-column grid: chart + category breakdown -->
+      <div class="section-grid">
+
+        <!-- Income vs Expenses chart -->
+        <div class="section">
+          <div class="section-header">
+            <span class="section-title">Income vs Expenses (6 months)</span>
+          </div>
+          <div class="section-body">
+            <div class="chart-container">
+              <canvas id="chart-monthly"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expense breakdown by category -->
+        <div class="section">
+          <div class="section-header">
+            <span class="section-title">Spending by Category</span>
+          </div>
+          <div class="section-body" id="category-breakdown">
+            <div class="loader"><div class="spinner"></div> Loading…</div>
+          </div>
+        </div>
+
+      </div><!-- /section-grid -->
+
+      <!-- Recent transactions -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">Recent Transactions</span>
+          <a href="pages/transactions.html" class="btn btn-ghost btn-sm">View all</a>
+        </div>
+        <div class="section-body" id="recent-transactions">
+          <div class="loader"><div class="spinner"></div> Loading…</div>
+        </div>
+      </div>
+
+    </div><!-- /page -->
+  </main>
+</div>
+
+<!-- Confirm overlay (shared) -->
+<div class="modal-overlay" id="confirm-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Confirm</span>
+    </div>
+    <div class="modal-body">
+      <p id="confirm-message"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="confirm-cancel">Cancel</button>
+      <button class="btn btn-primary" id="confirm-ok" style="background:var(--color-expense);border-color:var(--color-expense)">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

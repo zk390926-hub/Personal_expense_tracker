@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transactions – Personal Expense Tracker</title>
+  <meta name="description" content="View, add, edit, and delete income and expense transactions." />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+</head>
+<body>
+
+<header class="mobile-header">
+  <span class="mobile-header-brand">Expense Tracker</span>
+  <button class="btn-hamburger" id="btn-hamburger" aria-label="Open menu">
+    <svg viewBox="0 0 24 24"><line x1="3" y1="6"  x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</header>
+
+<div class="app-layout">
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93V18h-2v1.93C7.06 19.44 4.56 16.94 4.07 14H6v-2H4.07C4.56 9.06 7.06 6.56 10 6.07V8h2V6.07c2.94.49 5.44 2.99 5.93 5.93H16v2h1.93c-.49 2.94-2.99 5.44-5.93 5.93z"/></svg>
+      </div>
+      <div>
+        <div class="sidebar-brand-name">Expense Tracker</div>
+        <div class="sidebar-brand-sub">Personal Finance</div>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="sidebar-nav-label">Menu</div>
+      <a href="../index.html">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="transactions.html" class="active">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Transactions
+      </a>
+      <a href="reports.html">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Reports
+      </a>
+      <a href="budget.html">
+        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Budget
+      </a>
+    </div>
+    <div class="sidebar-footer">&copy; 2024 Expense Tracker</div>
+  </nav>
+
+  <main class="main-content">
+    <div class="page">
+
+      <div class="page-header">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <div>
+            <h1 class="page-title">Transactions</h1>
+            <p class="page-subtitle">All income and expense records</p>
+          </div>
+          <button class="btn btn-primary" id="btn-add-transaction">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Transaction
+          </button>
+        </div>
+      </div>
+
+      <div id="toast-container" aria-live="polite"></div>
+      <div id="tx-alert"></div>
+
+      <!-- Filter bar -->
+      <div class="section" style="margin-bottom:16px">
+        <div class="filter-bar">
+          <!-- Search -->
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="filter-search" placeholder="Search description…" />
+          </div>
+          <!-- Type -->
+          <div class="form-group">
+            <label for="filter-type">Type</label>
+            <select id="filter-type">
+              <option value="">All types</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+          </div>
+          <!-- Category -->
+          <div class="form-group">
+            <label for="filter-category">Category</label>
+            <select id="filter-category"><option value="">All categories</option></select>
+          </div>
+          <!-- Date from -->
+          <div class="form-group">
+            <label for="filter-date-from">From</label>
+            <input type="date" id="filter-date-from" />
+          </div>
+          <!-- Date to -->
+          <div class="form-group">
+            <label for="filter-date-to">To</label>
+            <input type="date" id="filter-date-to" />
+          </div>
+          <!-- Actions -->
+          <div class="form-group" style="justify-content:flex-end;flex-direction:row;align-items:flex-end;gap:6px">
+            <button class="btn btn-primary btn-sm" id="btn-apply-filter">Apply</button>
+            <button class="btn btn-secondary btn-sm" id="btn-reset-filter">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction table -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title" id="tx-count">Transactions</span>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" id="btn-sort-date" title="Sort by date">Date ↕</button>
+            <button class="btn btn-ghost btn-sm" id="btn-sort-amount" title="Sort by amount">Amount ↕</button>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table id="tx-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th class="hide-mobile">Category</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th class="text-right hide-mobile">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tx-tbody">
+              <tr><td colspan="6"><div class="loader"><div class="spinner"></div> Loading…</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="tx-pagination" class="pagination"></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Add / Edit Transaction modal -->
+<div class="modal-overlay" id="tx-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="tx-modal-title">Add Transaction</span>
+      <button class="btn btn-ghost btn-sm" id="btn-close-tx-modal" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="tx-form-alert"></div>
+      <form id="tx-form" novalidate>
+        <input type="hidden" id="tx-id" />
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="tx-type">Type *</label>
+            <select id="tx-type" required>
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tx-amount">Amount (₹) *</label>
+            <input type="number" id="tx-amount" min="0.01" step="0.01" placeholder="0.00" required />
+            <span class="form-error hidden" id="err-amount">Enter a valid positive amount.</span>
+          </div>
+          <div class="form-group">
+            <label for="tx-category">Category *</label>
+            <select id="tx-category" required>
+              <option value="">Select category</option>
+            </select>
+            <span class="form-error hidden" id="err-category">Please select a category.</span>
+          </div>
+          <div class="form-group">
+            <label for="tx-date">Date *</label>
+            <input type="date" id="tx-date" required />
+            <span class="form-error hidden" id="err-date">Please select a valid date.</span>
+          </div>
+          <div class="form-group full-width">
+            <label for="tx-description">Description</label>
+            <input type="text" id="tx-description" maxlength="255" placeholder="Optional note" />
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="btn-cancel-tx">Cancel</button>
+      <button class="btn btn-primary" id="btn-save-tx">Save Transaction</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm delete overlay -->
+<div class="modal-overlay" id="confirm-overlay">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Confirm Delete</span></div>
+    <div class="modal-body"><p id="confirm-message"></p></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="confirm-cancel">Cancel</button>
+      <button class="btn btn-primary" id="confirm-ok" style="background:var(--color-expense);border-color:var(--color-expense)">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/transactions.js"></script>
+</body>
+</html>

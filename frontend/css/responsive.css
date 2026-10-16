@@ -1,0 +1,67 @@
+/* responsive.css – Media queries for Personal Expense Tracker */
+
+/* ── Tablet (≤ 900px) ─────────────────────────────────────── */
+@media (max-width: 900px) {
+  .section-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Mobile (≤ 680px) ─────────────────────────────────────── */
+@media (max-width: 680px) {
+
+  /* Hide the desktop sidebar; show the mobile header */
+  .sidebar { display: none; }
+  .sidebar.open {
+    display:  flex;
+    position: fixed;
+    top:      var(--header-height);
+    height:   calc(100vh - var(--header-height));
+    box-shadow: var(--shadow-md);
+    z-index:  300;
+  }
+
+  .mobile-header { display: flex; }
+
+  .main-content { margin-left: 0; }
+
+  .page { padding: 16px; }
+
+  .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .stat-card { padding: 12px 14px; }
+  .stat-card-value { font-size: 1.2rem; }
+
+  .filter-bar {
+    flex-direction: column;
+  }
+
+  .filter-bar .form-group,
+  .search-wrap { min-width: 100%; width: 100%; }
+
+  table { font-size: .8rem; }
+  thead th, tbody td { padding: 8px 10px; }
+
+  /* Hide less critical columns on very small screens */
+  .hide-mobile { display: none; }
+
+  .form-grid { grid-template-columns: 1fr; }
+
+  .modal { max-width: 100%; }
+
+  .pagination { flex-wrap: wrap; }
+
+  #toast-container { left: 16px; right: 16px; bottom: 16px; }
+  .toast { min-width: 0; width: 100%; }
+
+  .category-row-name { flex: 0 0 90px; font-size: .78rem; }
+}
+
+/* ── Very small (≤ 400px) ─────────────────────────────────── */
+@media (max-width: 400px) {
+  .stats-row { grid-template-columns: 1fr; }
+}

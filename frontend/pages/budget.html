@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budget – Personal Expense Tracker</title>
+  <meta name="description" content="Set and track monthly spending budgets and per-category limits." />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+</head>
+<body>
+
+<header class="mobile-header">
+  <span class="mobile-header-brand">Expense Tracker</span>
+  <button class="btn-hamburger" id="btn-hamburger" aria-label="Open menu">
+    <svg viewBox="0 0 24 24"><line x1="3" y1="6"  x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</header>
+
+<div class="app-layout">
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93V18h-2v1.93C7.06 19.44 4.56 16.94 4.07 14H6v-2H4.07C4.56 9.06 7.06 6.56 10 6.07V8h2V6.07c2.94.49 5.44 2.99 5.93 5.93H16v2h1.93c-.49 2.94-2.99 5.44-5.93 5.93z"/></svg>
+      </div>
+      <div>
+        <div class="sidebar-brand-name">Expense Tracker</div>
+        <div class="sidebar-brand-sub">Personal Finance</div>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="sidebar-nav-label">Menu</div>
+      <a href="../index.html">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="transactions.html">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Transactions
+      </a>
+      <a href="reports.html">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Reports
+      </a>
+      <a href="budget.html" class="active">
+        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Budget
+      </a>
+    </div>
+    <div class="sidebar-footer">&copy; 2024 Expense Tracker</div>
+  </nav>
+
+  <main class="main-content">
+    <div class="page">
+
+      <div class="page-header">
+        <h1 class="page-title">Budget Tracking</h1>
+        <p class="page-subtitle">Set monthly spending limits and monitor your progress</p>
+        <div class="period-selector" style="margin-top:12px">
+          <label for="bud-month">Period:</label>
+          <select id="bud-month" style="width:130px">
+            <option value="1">January</option><option value="2">February</option>
+            <option value="3">March</option><option value="4">April</option>
+            <option value="5">May</option><option value="6">June</option>
+            <option value="7">July</option><option value="8">August</option>
+            <option value="9">September</option><option value="10">October</option>
+            <option value="11">November</option><option value="12">December</option>
+          </select>
+          <select id="bud-year" style="width:90px"></select>
+          <button class="btn btn-secondary btn-sm" id="btn-load-budgets">Load</button>
+        </div>
+      </div>
+
+      <div id="toast-container" aria-live="polite"></div>
+      <div id="bud-alert"></div>
+
+      <!-- Two-column: Set budget form + current budgets -->
+      <div class="section-grid">
+
+        <!-- Set / update budget form -->
+        <div class="section">
+          <div class="section-header">
+            <span class="section-title">Set Budget Limit</span>
+          </div>
+          <div class="section-body">
+            <div id="bud-form-alert"></div>
+            <form id="bud-form" novalidate>
+              <div class="form-grid" style="grid-template-columns:1fr">
+
+                <div class="form-group">
+                  <label for="bud-type">Budget type</label>
+                  <select id="bud-type">
+                    <option value="overall">Overall monthly budget</option>
+                    <option value="category">Per-category limit</option>
+                  </select>
+                </div>
+
+                <div class="form-group" id="bud-cat-group" style="display:none">
+                  <label for="bud-category">Expense category *</label>
+                  <select id="bud-category">
+                    <option value="">Select category</option>
+                  </select>
+                  <span class="form-error hidden" id="err-bud-cat">Please select a category.</span>
+                </div>
+
+                <div class="form-group">
+                  <label for="bud-amount">Budget amount (₹) *</label>
+                  <input type="number" id="bud-amount" min="1" step="0.01" placeholder="0.00" required />
+                  <span class="form-error hidden" id="err-bud-amount">Enter a valid positive amount.</span>
+                </div>
+
+                <div class="form-actions">
+                  <button class="btn btn-primary" type="submit" id="btn-save-budget">Save Budget</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Summary & current budgets -->
+        <div class="section">
+          <div class="section-header">
+            <span class="section-title">Current Budgets</span>
+            <span class="text-muted" style="font-size:.8rem" id="bud-period-label"></span>
+          </div>
+          <div class="section-body" id="bud-list">
+            <div class="loader"><div class="spinner"></div> Loading…</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Over-budget warnings -->
+      <div id="bud-warnings"></div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Confirm delete -->
+<div class="modal-overlay" id="confirm-overlay">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Confirm Delete</span></div>
+    <div class="modal-body"><p id="confirm-message"></p></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="confirm-cancel">Cancel</button>
+      <button class="btn btn-primary" id="confirm-ok" style="background:var(--color-expense);border-color:var(--color-expense)">Remove</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/budget.js"></script>
+</body>
+</html>
